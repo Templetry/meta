@@ -1,0 +1,28 @@
+name: Verify template
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install templetry
+        run: |
+          curl -sL -o /usr/local/bin/templetry \
+            "https://github.com/Templetry/engine/releases/latest/download/templetry-linux-amd64"
+          chmod +x /usr/local/bin/templetry
+      - name: Render with sample inputs
+        run: |
+          templetry render --template . --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App" --feature extras
+      - name: No identity leftovers
+        run: |
+          if grep -ri "sample-project\|SampleProject" "$RUNNER_TEMP/out"; then
+            echo "identity leftovers found - add the missing identity entries"; exit 1
+          fi
+      # Add your stack's real build here (the compile-verify that matters):
+      # - run: cd "$RUNNER_TEMP/out" && <your build command>

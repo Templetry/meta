@@ -1,0 +1,31 @@
+name: Verify forms
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  meta-chain:
+    name: template (meta chain)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install templetry
+        run: |
+          curl -sL -o /usr/local/bin/templetry \
+            "https://github.com/Templetry/engine/releases/latest/download/templetry-linux-amd64"
+          chmod +x /usr/local/bin/templetry
+      - name: Render the meta-template
+        run: |
+          templetry render --template ./template --out "$RUNNER_TEMP/tpl" \
+            --set "template_name=verify-template" --set "template_description=CI verification run"
+      - name: Render the generated template
+        run: |
+          templetry render --template "$RUNNER_TEMP/tpl" --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App" --feature extras
+      - name: No leftovers across the chain
+        run: |
+          if grep -ri "sample-project\|SampleProject\|new-template-name\|NEW_TEMPLATE" "$RUNNER_TEMP/out"; then
+            echo "identity leftovers in the meta chain"; exit 1
+          fi

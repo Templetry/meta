@@ -1,0 +1,32 @@
+schema_version: 1
+name: new-template-name
+description: NEW_TEMPLATE_DESCRIPTION
+platform: PLATFORM_TAG
+framework: FRAMEWORK_TAG
+
+# The variables users of your template will fill in.
+variables:
+  - key: project_name
+    label: Project name
+    type: string
+    pattern: "^[A-Za-z][A-Za-z0-9 ]*$"
+
+# Canonical identity: every form your placeholder identity takes.
+# Golden rule: your template must stay a real, working project.
+identity:
+  - from: "sample-project"
+    to: "{project_name.kebab}"
+  - from: "SampleProject"
+    to: "{project_name.pascal}"
+
+# Additive variation: files and patches toggled at render time.
+features:
+  - key: extras
+    label: Example optional feature
+    default: false
+    files: ["extras/**"]
+    patches:
+      - file: config.json
+        op: add
+        path: /features/extras
+        value: true

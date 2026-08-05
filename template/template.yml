@@ -1,0 +1,43 @@
+schema_version: 1
+name: meta-template
+description: A template that creates Templetry templates — skeleton, author guide, mechanism showcase and verify CI
+platform: any
+framework: templetry
+
+variables:
+  - key: template_name
+    label: New template name
+    type: string
+    pattern: "^[a-z0-9]+(-[a-z0-9]+)*$"
+  - key: template_description
+    label: Short description
+    type: string
+    default: "A new Templetry template"
+  - key: platform_tag
+    label: Platform tag (catalog)
+    type: string
+    default: "any"
+  - key: framework_tag
+    label: Framework tag (catalog)
+    type: string
+    default: "custom"
+
+identity:
+  - from: "template.starter.yml"   # becomes the new template's manifest
+    to: "template.yml"
+  - from: "hello.py.tpl"           # carries output directives; renamed on render
+    to: "hello.py"
+  - from: "new-template-name"
+    to: "{template_name}"
+  - from: "NEW_TEMPLATE_DESCRIPTION"
+    to: "{template_description}"
+  - from: "PLATFORM_TAG"
+    to: "{platform_tag}"
+  - from: "FRAMEWORK_TAG"
+    to: "{framework_tag}"
+
+features:
+  - key: ci
+    label: Verify workflow (GitHub Actions)
+    default: true
+    files: [".github/workflows/verify.yml"]
