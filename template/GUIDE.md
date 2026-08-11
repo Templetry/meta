@@ -74,3 +74,11 @@ When you want *variants* of your template, use the catalog model:
 ```
 
 3. Consumers point at it: CLI `templetry list --registry <url>` / `init --registry <url>`, or the desktop app via **Settings → Registry URL**. Your catalog behaves exactly like the official one.
+
+## 8. AI-ready docs (convention)
+
+Projects rendered from your template will be worked on by AI agents. Ship the guidance with the template — it renames with the project identity like everything else:
+
+1. **`AGENTS.md` at the form root**: the operating contract — mission, core rules (module boundaries, build conventions), required checks before finishing, and the safe change workflow. Keep it imperative and short; agents follow lists, not prose.
+2. Optional for bigger forms: `AI_INDEX.md` (map of where things live) and `docs/ai/` (architecture guardrails, pattern recipes). The `kmp` and `android` parents show the shape.
+3. Everything an agent must run to validate a change (build, lint, tests) belongs in AGENTS.md **and** in CI — the contract and its teeth.
