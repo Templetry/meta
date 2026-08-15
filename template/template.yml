@@ -1,8 +1,7 @@
 schema_version: 1
 name: meta-template
 description: A template that creates Templetry templates — skeleton, author guide, mechanism showcase and verify CI
-platform: any
-framework: templetry
+frameworks: [templetry]
 
 variables:
   - key: template_name
