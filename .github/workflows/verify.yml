@@ -15,11 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install templetry
-        run: |
-          curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/latest/download/templetry-linux-amd64"
-          chmod +x /usr/local/bin/templetry
+      - uses: Templetry/.github/actions/setup-templetry@main
       - name: Render the meta-template
         run: |
           templetry render --template ./template --out "$RUNNER_TEMP/tpl" \
