@@ -1,8 +1,14 @@
 schema_version: 1
 name: new-template-name
 description: NEW_TEMPLATE_DESCRIPTION
-platform: PLATFORM_TAG
-framework: FRAMEWORK_TAG
+
+# The taxonomy (ADR-0017). Three independent axes, each a list, because a
+# form is usually more than one thing. `kinds` is a closed vocabulary:
+# frontend, backend, database, infra, multiplatform, android, ios, desktop,
+# cli — an unknown value is an error naming the allowed set.
+kinds: [KIND_TAGS]
+languages: [LANGUAGE_TAGS]
+frameworks: [FRAMEWORK_TAGS]
 
 # The variables users of your template will fill in.
 variables:
@@ -21,6 +27,14 @@ identity:
 
 # Additive variation: files and patches toggled at render time.
 features:
+  # Environment profiles (ADR-0018). Every catalog form ships these; see
+  # section 9 of GUIDE.md for what counts as done, and use your ecosystem's
+  # own mechanism rather than inventing a Templetry-shaped one.
+  - key: environments
+    label: development / staging / production profiles (ADR-0018)
+    default: true
+    files: ["config/**"]
+
   - key: extras
     label: Example optional feature
     default: false

@@ -12,15 +12,19 @@ variables:
     label: Short description
     type: string
     default: "A new Templetry template"
-  - key: platform_tag
-    label: Platform tag (catalog)
+
+  - key: kind_tags
+    label: Kinds (comma-separated; frontend, backend, database, infra, multiplatform, android, ios, desktop, cli)
     type: string
-    default: "any"
-  - key: framework_tag
-    label: Framework tag (catalog)
+    default: "backend"
+  - key: language_tags
+    label: Languages (comma-separated, kebab-case)
+    type: string
+    default: "typescript"
+  - key: framework_tags
+    label: Frameworks (comma-separated, kebab-case)
     type: string
     default: "custom"
-
 identity:
   - from: "template.starter.yml"   # becomes the new template's manifest
     to: "template.yml"
@@ -30,10 +34,13 @@ identity:
     to: "{template_name}"
   - from: "NEW_TEMPLATE_DESCRIPTION"
     to: "{template_description}"
-  - from: "PLATFORM_TAG"
-    to: "{platform_tag}"
-  - from: "FRAMEWORK_TAG"
-    to: "{framework_tag}"
+
+  - from: "KIND_TAGS"
+    to: "{kind_tags}"
+  - from: "LANGUAGE_TAGS"
+    to: "{language_tags}"
+  - from: "FRAMEWORK_TAGS"
+    to: "{framework_tags}"
 
 features:
   - key: ci

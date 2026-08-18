@@ -66,7 +66,8 @@ When you want *variants* of your template, use the catalog model:
       "repo": "you/mystuff", "ref": "main",
       "forms": [
         { "form": "starter", "name": "mystuff-starter", "path": "starter",
-          "status": "ready", "description": "What it scaffolds" }
+          "status": "ready", "description": "What it scaffolds",
+          "kinds": ["backend"], "languages": ["typescript"], "frameworks": ["express"] }
       ]
     }
   ]
@@ -82,3 +83,33 @@ Projects rendered from your template will be worked on by AI agents. Ship the gu
 1. **`AGENTS.md` at the form root**: the operating contract — mission, core rules (module boundaries, build conventions), required checks before finishing, and the safe change workflow. Keep it imperative and short; agents follow lists, not prose.
 2. Optional for bigger forms: `AI_INDEX.md` (map of where things live) and `docs/ai/` (architecture guardrails, pattern recipes). The `kmp` and `android` parents show the shape.
 3. Everything an agent must run to validate a change (build, lint, tests) belongs in AGENTS.md **and** in CI — the contract and its teeth.
+
+## 9. Environment profiles (convention)
+
+Every form in the official catalog ships `development` / `staging` / `production` ([ADR-0018](https://github.com/Templetry/wiki/blob/main/adr/0018-environment-profiles.md)). Yours should too, as a feature keyed `environments`, default on.
+
+**Use your ecosystem's own mechanism — do not invent a Templetry-shaped one.** That is the same rule that keeps framework knowledge out of the engine: a generated project should carry configuration its own tooling understands, not a layer nobody asked for. What the catalog uses today:
+
+| Ecosystem | Mechanism |
+|---|---|
+| ASP.NET | `appsettings.{Environment}.json` + `ASPNETCORE_ENVIRONMENT` |
+| Spring Boot | `application-{profile}.yml` + `SPRING_PROFILES_ACTIVE` |
+| Vite | `.env.{mode}`, selected with `--mode` |
+| Next.js | `.env.{profile}` chosen by `APP_ENV`, inlined via `next.config.ts` |
+| NestJS | `@nestjs/config` with a `validate` hook |
+| Android | product flavors + `buildConfigField` |
+| Xcode | build configurations + `SWIFT_ACTIVE_COMPILATION_CONDITIONS` |
+| KMP | a Gradle task generating one typed object into `commonMain` |
+| Node, Python, Go, Rust | `.env.<profile>` at the root, selected by `APP_ENV` |
+
+The names are the same everywhere on purpose, so `--feature environments` means one thing across the catalog. The long spellings win because ASP.NET and Vite both key on those exact strings.
+
+**A profile is not three empty files.** It counts as done when all three hold:
+
+1. **Three sources exist** and differ in something observable — a log level, a cache lifetime, an error-detail flag — not just in a name string.
+2. **The app reads the active one through a single typed accessor**, validated as early as the platform allows: at startup, at context refresh, or at compile time. Not scattered `getenv` calls.
+3. **A test asserts that loading a named profile yields that profile's values.** Without it, the profiles are decoration that rots on the first rename.
+
+Where a platform cannot express one of these, say so rather than faking it. iOS makes the selection a compile-time fact and turns a missing flag into `#error`; Android verifies its generated `BuildConfig` in CI because per-variant codegen makes a plain unit test awkward across flavors.
+
+**Committed profiles carry no secrets.** They hold non-secret defaults; real credentials come from the deployment environment or a secret manager. Gitignore a local override (`.env.local`, `appsettings.Local.json`) for the values one machine needs. A template that shipped a plausible-looking secret would teach the habit of committing them.
